@@ -79,7 +79,7 @@ contract WalletManager is Ownable {
         address token,
         address to,
         uint256 amount
-    ) external {
+    ) public {
         require(tokens[token].isActive || token == address(0), "Token not supported");
         
         if (token == address(0)) {

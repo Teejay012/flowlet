@@ -60,7 +60,7 @@ export default function Dashboard() {
         {/* Total Balance + Actions */}
         <div className="mb-8">
           <p className="text-lg text-gray-300 mb-4">
-            Total Balance: ${totalUsd.toFixed(2)} USD
+            Total USDC Balance: ${totalUsd.toFixed(2)} USD
           </p>
           <div className="flex flex-wrap gap-4">
             <Button className="bg-[#2DD4BF] hover:bg-[#2DD4BF] flex items-center gap-2 px-4 py-2 rounded-lg">

@@ -8,6 +8,7 @@ import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/Messa
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {SIG_VALIDATION_FAILED, SIG_VALIDATION_SUCCESS} from "lib/account-abstraction/contracts/core/Helpers.sol";
 import {IEntryPoint} from "lib/account-abstraction/contracts/interfaces/IEntryPoint.sol";
+import {WalletManager} from "src/WalletManager.sol";
 
 
 contract SmartAccount is IAccount, Ownable {
@@ -23,6 +24,7 @@ contract SmartAccount is IAccount, Ownable {
                             STATE VARIABLES
     //////////////////////////////////////////////////////////////*/
     IEntryPoint private immutable i_entryPoint;
+    WalletManager public walletManager;
     uint256 public s_nonce;
 
 
@@ -48,8 +50,9 @@ contract SmartAccount is IAccount, Ownable {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-    constructor(address entryPointz, address _owner) Ownable(_owner) {
-        i_entryPoint = IEntryPoint(entryPointz);
+    constructor(address entryPoint, address _owner) Ownable(_owner) {
+        i_entryPoint = IEntryPoint(entryPoint);
+        walletManager = new WalletManager();
     }
 
     receive() external payable {}
@@ -121,6 +124,10 @@ contract SmartAccount is IAccount, Ownable {
     //////////////////////////////////////////////////////////////*/
     function getEntryPoint() external view returns (address) {
         return address(i_entryPoint);
+    }
+
+    function getWalletManagerAddress() external view returns (address) {
+        return address(walletManager);
     }
 }
 

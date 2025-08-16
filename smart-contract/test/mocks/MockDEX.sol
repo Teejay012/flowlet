@@ -38,7 +38,7 @@ contract MockDEX is Ownable {
         address tokenB,
         uint256 amountA,
         uint256 amountB
-    ) external onlyOwner {
+    ) external payable onlyOwner {
         require(tokenA != tokenB, "Same tokens");
         require(amountA > 0 && amountB > 0, "Invalid amounts");
         
@@ -119,10 +119,10 @@ contract MockDEX is Ownable {
     function swapExactTokensForTokens(
         uint256 amountIn,
         uint256 amountOutMin,
-        address[] calldata path,
+        address[] memory path,
         address to,
         uint256 deadline
-    ) external payable returns (uint256[] memory amounts) {
+    ) public payable returns (uint256[] memory amounts) {
         require(deadline >= block.timestamp, "Expired");
         require(path.length >= 2, "Invalid path");
         

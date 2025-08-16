@@ -7,18 +7,25 @@ import {IEntryPoint} from "lib/account-abstraction/contracts/interfaces/IEntryPo
 contract SmartAccountFactory {
     IEntryPoint public immutable entryPoint;
 
+    event AccountCreated(address indexed account, address indexed owner, uint256 salt);
+
     constructor(IEntryPoint _entryPoint) {
         entryPoint = _entryPoint;
     }   
 
-    function createAccount(uint256 salt) external returns (SmartAccount account) {
-        account = new SmartAccount{salt: bytes32(salt)}(address(entryPoint), msg.sender);
+    function createAccount(address owner, uint256 salt) external returns (SmartAccount account) {
+        account = new SmartAccount{salt: bytes32(salt)}(
+            address(entryPoint),
+            owner
+        );
+        emit AccountCreated(address(account), owner, salt);
     }
 
-    function getAddress(uint256 salt) external view returns (address predicted) {
+
+    function getAddress(address owner, uint256 salt) external view returns (address predicted) {
         bytes memory code = abi.encodePacked(
             type(SmartAccount).creationCode,
-            abi.encode(address(entryPoint), msg.sender)
+            abi.encode(address(entryPoint), owner)
         );
 
         bytes32 bytecodeHash = keccak256(code);

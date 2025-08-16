@@ -1,4 +1,5 @@
 import React from 'react';
+import ConnectWalletBtn from '@/components/ui/ConnectWalletBtn';
 
 const Navbar = () => {
   return (
@@ -22,11 +23,7 @@ const Navbar = () => {
       </div> */}
 
       {/* Connect Wallet Button */}
-      <button
-        className="bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white px-5 py-2 rounded-xl font-semibold shadow-lg hover:scale-105 transition-transform backdrop-blur-md cursor-pointer"
-      >
-        Connect Wallet
-      </button>
+      <ConnectWalletBtn />
     </nav>
   );
 };

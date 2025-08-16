@@ -1,20 +1,37 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { useFlowletState } from "@/hooks/contexts/FlowletProvider";
+import toast from "react-hot-toast";
 
 export default function CreateWalletPage() {
   const [salt, setSalt] = useState("");
 
-  const handleCreateWallet = () => {
-    // Placeholder functionality
-    console.log("Create wallet with salt:", salt);
+  const { createSmartAccount, smartAccount, connectWallet } = useFlowletState();
+
+  const handleCreateWallet = async () => {
+    if (!salt) {
+      toast.error("Please enter a salt (pin/passphrase)");
+      return;
+    }
+
+    await connectWallet();
+    const accountAddr = await createSmartAccount(salt);
+
+    if (accountAddr) {
+      toast.success(`Wallet ready: ${accountAddr}`);
+    }
   };
 
   const handleRetrieveWallet = () => {
-    // Placeholder functionality
-    console.log("Retrieve wallet with salt:", salt);
+    const storedAccount = localStorage.getItem("smartAccount");
+    if (storedAccount) {
+      toast.success(`Loaded wallet: ${storedAccount}`);
+    } else {
+      toast.error("No wallet found. Create one first.");
+    }
   };
 
   return (
@@ -25,7 +42,9 @@ export default function CreateWalletPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md bg-[#0f172a] rounded-2xl shadow-xl p-8 border border-[#1e293b]"
       >
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">Create or Retrieve Wallet</h1>
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+          Create or Retrieve Wallet
+        </h1>
         <p className="text-sm text-slate-300 text-center mb-4">
           Use a unique salt (like a pin or passphrase). You can either create a new wallet or retrieve an existing one.
         </p>
@@ -50,8 +69,15 @@ export default function CreateWalletPage() {
             Retrieve Wallet
           </Button>
         </div>
-        <div className="text-xs text-center text-slate-400">
-          ⚠️ Note: <span className="text-white font-medium">USDC</span> is used as gas, deposit <span className="text-white font-medium">USDC</span> to the generated wallet address.
+        {smartAccount && (
+          <div className="mt-4 text-center text-slate-300 text-sm break-words">
+            Current Smart Account:
+            <span className="block text-white">{smartAccount}</span>
+          </div>
+        )}
+        <div className="text-xs text-center text-slate-400 mt-2">
+          ⚠️ Note: <span className="text-white font-medium">USDC</span> is used as gas, deposit{" "}
+          <span className="text-white font-medium">USDC</span> to the generated wallet address.
         </div>
       </motion.div>
     </main>

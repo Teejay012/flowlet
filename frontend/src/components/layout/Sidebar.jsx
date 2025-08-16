@@ -1,17 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Copy, Home, PlusCircle, Settings } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { toast } from "sonner";
+import { useFlowletState } from "@/hooks/contexts/FlowletProvider";
 
 export default function Sidebar() {
-  const [walletAddress] = useState("0xAbCd...1234");
+  const { smartAccount } = useFlowletState();
+  const [walletAddress, setWalletAddress] = useState("");
+
+  // Load from context or localStorage
+  useEffect(() => {
+    if (smartAccount) {
+      setWalletAddress(smartAccount);
+    } else {
+      const stored = localStorage.getItem("smartAccount");
+      if (stored) setWalletAddress(stored);
+    }
+  }, [smartAccount]);
 
   const handleCopy = () => {
+    if (!walletAddress) return;
     navigator.clipboard.writeText(walletAddress);
-    toast.success("Address copied!");
+    toast.success("Address copied to clipboard!");
+  };
+
+  const formatAddress = (address) => {
+    if (!address) return "No account";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   return (
@@ -21,12 +39,16 @@ export default function Sidebar() {
         <Card className="md:p-4 bg-white dark:bg-gray-800">
           <div className="md:flex md:items-center md:justify-between">
             <div className="hidden md:block">
-              <p className="text-xs text-muted-foreground">Your Wallet Address</p>
-              <p className="font-mono text-sm font-semibold">{walletAddress}</p>
+              <p className="text-xs text-muted-foreground">Smart Account</p>
+              <p className="font-mono text-sm font-semibold">
+                {formatAddress(walletAddress)}
+              </p>
             </div>
-            <Button size="icon" onClick={handleCopy}>
-              <Copy className="w-4 h-4" />
-            </Button>
+            {walletAddress && (
+              <Button size="icon" onClick={handleCopy}>
+                <Copy className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </Card>
       </div>
